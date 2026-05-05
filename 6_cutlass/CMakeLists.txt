@@ -1,0 +1,47 @@
+# 需要修改成为自己的cutlass路径
+set(CUTLASS_PATH "/home/lang/workspace/cutlass/include/")
+set(CUTLASS_UTIL_PATH "/home/lang/workspace/cutlass/tools/util/include")
+set(CUTLASS_NVCC_ARCHS 86)
+set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} --expt-relaxed-constexpr")
+
+add_executable(v1_print_half v1_print_half.cu)
+target_link_libraries(v1_print_half PRIVATE CUDA::cudart ${CUDA_cublas_LIBRARY})
+target_include_directories(v1_print_half PRIVATE ${CUTLASS_PATH})
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    target_compile_options(v1_print_half PRIVATE  $<$<COMPILE_LANGUAGE:CUDA>:$<$<CONFIG:Debug>:-O0 -G>>)
+else()
+    target_compile_options(v1_print_half PRIVATE -lineinfo)
+endif()
+
+add_executable(v2_turing_tensorop_gemm v2_turing_tensorop_gemm.cu)
+target_link_libraries(v2_turing_tensorop_gemm PRIVATE CUDA::cudart ${CUDA_cublas_LIBRARY})
+target_include_directories(v2_turing_tensorop_gemm PRIVATE ${CUTLASS_PATH} ${CUTLASS_UTIL_PATH})
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    target_compile_options(v2_turing_tensorop_gemm PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:-G>)
+else()
+    target_compile_options(v2_turing_tensorop_gemm PRIVATE -lineinfo)
+endif()
+
+add_executable(v3_gemm_bias_relu v3_gemm_bias_relu.cu)
+target_link_libraries(v3_gemm_bias_relu PRIVATE CUDA::cudart ${CUDA_cublas_LIBRARY})
+target_include_directories(v3_gemm_bias_relu PRIVATE ${CUTLASS_PATH} ${CUTLASS_UTIL_PATH})
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    target_compile_options(v3_gemm_bias_relu PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:-g -G>)
+else()
+    target_compile_options(v3_gemm_bias_relu PRIVATE -lineinfo)
+endif()
+target_compile_options(v3_gemm_bias_relu PRIVATE -O0)
+
+add_executable(v4_hopper_collective_builder v4_hopper_collective_builder.cu)
+target_link_libraries(v4_hopper_collective_builder PRIVATE CUDA::cudart ${CUDA_cublas_LIBRARY})
+target_include_directories(v4_hopper_collective_builder PRIVATE ${CUTLASS_PATH} ${CUTLASS_UTIL_PATH})
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    target_compile_options(v4_hopper_collective_builder PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:-g -G>)
+else()
+    target_compile_options(v4_hopper_collective_builder PRIVATE -lineinfo)
+endif()
+target_compile_options(v4_hopper_collective_builder PRIVATE -O0)
+
+
+add_subdirectory(gemm_softmax)
+

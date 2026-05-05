@@ -10,10 +10,11 @@ CUDA_Notes/
 ├── 0_elementwise/              # 向量加法：向量化访存
 ├── 1_reduce/                   # 规约：shared memory 与 warp shuffle
 ├── 2_sgemm/                    # 矩阵乘法：shared memory 版
-├── 3_transpose/                # 矩阵转置 (TODO)
-├── 4_gemv/                     # 矩阵向量乘法 (TODO)
-├── 5_mma/                      # Tensor Core MMA 操作 (TODO)
-└── 6_cutlass/                  # CUTLASS 库使用 (TODO)
+├── 3_transpose/                # 矩阵转置
+├── 4_gemv/                     # 矩阵向量乘法
+├── 5_mma/                      # Tensor Core WMMA 操作
+├── 6_cutlass/                  # CUTLASS 库使用
+└── 7_cute/                     # CUTE: CUTLASS 的更低层抽象
 ```
 
 ## 核心概念
@@ -92,7 +93,7 @@ NVIDIA 官方的高性能 GEMM 库模板，基于 C++ 模板和 CUDA 抽象，�
 
 ---
 
-### 4_gemv - 矩阵向量乘法 (TODO)
+### 4_gemv - 矩阵向量乘法
 
 学习 memory-bound 场景下的访存优化。
 
@@ -118,6 +119,23 @@ NVIDIA 官方的高性能 GEMM 库模板，基于 C++ 模板和 CUDA 抽象，�
 - CUTLASS 模板结构 (`kernel`, `threadblock`, `warp`)
 - `cutlass::gemm::device::Gemm` 接口
 - 自定义 kernel 与 epilogue
+
+---
+
+### 7_cute - CUTE (CUDA Template Engine)
+
+CUTE 是 CUTLASS 的底层抽象，直接操作 Tensor/Memory/Scheduler，提供更细粒度的控制。
+
+**核心知识点:**
+- `Tensor` 抽象：统一表示设备指针、形状、步长
+- `TiledMMA` / `ThrMMA`：将 MMA 操作分片到线程
+- `copy` / `gemm`：模板化的拷贝与矩阵运算
+
+**代码文件 (渐进优化):**
+- `v1_native_gemm.cu` - 直接全局内存→寄存器，无共享内存
+- `v2_shared_memory.cu` - 添加 shared memory + `cp_async`
+- `v3_epilogue.cu` - 结果通过共享内存写回 (R2S→S2G)
+- `v4_multistage.cu` - K-stage 流水线，计算与访存重叠
 
 ---
 
@@ -162,6 +180,8 @@ make -j$(nproc)
 5_mma (Tensor Core warp-level mma)
          ↓
 6_cutlass (生产级高性能 GEMM)
+         ↓
+7_cute (底层抽象，细粒度控制)
 ```
 
 ## 参考资料
