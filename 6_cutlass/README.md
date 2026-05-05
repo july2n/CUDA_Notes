@@ -24,12 +24,6 @@
 
 ## 快速开始
 
-### 环境要求
-
-- CUDA 11.8+ / CUDA 12+
-- CUTLASS 3.x（建议从源码编译，cmake 配置 `CUTLASS_NVCC_ARCHS` 为目标架构）
-- CMake 3.18+
-
 ### 编译
 
 ```bash
@@ -65,7 +59,7 @@ std::cout << x << std::endl;  // 输出: 2.25
 ### v2 — CUTLASS 2.x 风格：Turing TensorCore GEMM
 
 **源文件**: `v2_turing_tensorop_gemm.cu`
-**对应文章**: [初学CUTLASS 2.x — 以 Turing Tensor Core GEMM 为例](https://zhuanlan.zhihu.com/p/2032866203585209114)
+**笔记**: [初学CUTLASS 2.x — 以 Turing Tensor Core GEMM 为例](https://zhuanlan.zhihu.com/p/2032866203585209114)
 
 CUTLASS 2.x 的核心是 `cutlass::gemm::device::Gemm` 模板，将 GEMM 内核拆解为若干可配置的组件：
 
@@ -111,7 +105,7 @@ using EpilogueOp = cutlass::epilogue::thread::LinearCombinationRelu<
 ### v4 — CUTLASS 3.x：CollectiveBuilder（Hopper 架构）
 
 **源文件**: `v4_hopper_collective_builder.cu`
-**对应文章**: [初学CUTLASS 3.x — collective_builder及配置调优](https://zhuanlan.zhihu.com/p/2033131870070757357)
+**笔记**: [初学CUTLASS 3.x — collective_builder及配置调优](https://zhuanlan.zhihu.com/p/2033131870070757357)
 
 CUTLASS 3.x 引入了 `CollectiveBuilder`，它将 GEMM 分解为 **Producer**（数据加载）和 **Consumer**（计算）两个阶段，采用双 pipeline（`Math` + ` prologue/epilogue`）更好地隐藏内存访问延迟：
 
@@ -146,11 +140,11 @@ Y = softmax(X · W + b)  其中 X·W 是一个 GEMM 操作
 
 ## CUTLASS 版本演进
 
-| 版本 | 典型 API | 架构支持 | 核心抽象 |
-|------|----------|----------|----------|
-| CUTLASS 2.x | `gemm::device::Gemm` | Volta/Turing/Ampere | 分层 tile，Epilogue fusion |
-| CUTLASS 3.x | `CollectiveBuilder` + `Mainloop`/`Epilogue` | Ampere/Hopper | 双 pipeline，Cluster MMA |
-| cute (3.x) | `cute::tensor` + `tiled_mma` | Hopper+ | 最低级原语，完全控制 |
+| 版本 | 典型 API | 架构支持 | 核心抽象 / 特性 |
+|------|----------|----------|------------------|
+| CUTLASS 2.x | `gemm::device::Gemm` (Legacy) | Volta/Turing/Ampere | 基于 Iterator 的分层平铺；Epilogue Fusion；Thread-level 映射 |
+| CUTLASS 3.x (High-level) | `CollectiveBuilder` / `gemm::kernel::GemmUniversal` | Ampere/Hopper/Blackwell | 声明式编程；将 Mainloop 与 Epilogue 解耦；自动生成最优的 Collective 算子 |
+| CuTe (3.x+ 底层) | `cute::Layout`, `cute::Tensor`, `TiledMMA` | Volta (SM70) 及以上 | Layout 映射（Strided Indexing）；Hierarchical Tiling；将硬件指令（TMA, WGMMA）抽象为 Atom |
 
 ## 常见问题
 
