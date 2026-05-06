@@ -1,13 +1,17 @@
-add_executable(shared_memory shared_memory.cu)
-target_link_libraries(shared_memory PRIVATE CUDA::cudart ${CUDA_cublas_LIBRARY})
-if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-    target_compile_options(shared_memory PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:-G>)
-endif()
+cmake_minimum_required(VERSION 3.16)
+project(CUDA_SGEMM LANGUAGES CXX CUDA)
 
+find_package(CUDA REQUIRED)
 
+set(CMAKE_CUDA_ARCHITECTURES 86)
 
-add_executable(register_outer_product_float4 register_outer_product_float4.cu)
-target_link_libraries(register_outer_product_float4 PRIVATE CUDA::cudart ${CUDA_cublas_LIBRARY})
-if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-    target_compile_options(register_outer_product_float4 PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:-G>)
-endif()
+include_directories(${CUDA_INCLUDE_DIRS})
+include_directories(${PROJECT_SOURCE_DIR}/include)
+aux_source_directory(${PROJECT_SOURCE_DIR}/src SRC)
+
+add_executable(main main.cu ${SRC})
+
+# enable separate compilation for template instantiations
+set_target_properties(main PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
+
+target_link_libraries(main ${CUDA_LIBRARIES} ${CUDA_cublas_LIBRARY})

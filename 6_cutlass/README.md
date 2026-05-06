@@ -8,9 +8,6 @@
 6_cutlass/
 ├── CMakeLists.txt          # 构建配置
 ├── common/                 # 共享头文件
-│   ├── helper.h            # CUDA/CUTLASS 错误检查宏、GpuTimer
-│   ├── gather_tensor.hpp    # Tensor gather 操作辅助
-│   └── dist_gemm_helpers.h  # Distributed GEMM 辅助
 ├── v1_print_half.cu        # half_t 类型打印（环境验证）
 ├── v2_turing_tensorop_gemm.cu  # CUTLASS 2.x — Turing TensorCore GEMM
 ├── v3_gemm_bias_relu.cu    # CUTLASS 2.x — GEMM + Bias + ReLU
@@ -20,27 +17,6 @@
     ├── gemm_softmax.cu
     ├── gemm_with_softmax.h
     └── gemm_with_epilogue_visitor.h
-```
-
-## 快速开始
-
-### 编译
-
-```bash
-cd /path/to/CUDA_Notes/6_cutlass
-mkdir build && cd build
-cmake .. -DCMAKE_BUILD_TYPE=Release
-make -j$(nproc)
-```
-
-### 运行
-
-```bash
-./v1_print_half                    # 验证编译环境
-./v2_turing_tensorop_gemm          # Turing TensorCore GEMM
-./v3_gemm_bias_relu                # GEMM + Bias + ReLU
-./v4_hopper_collective_builder     # Hopper CollectiveBuilder
-./gemm_softmax/gemm_softmax       # GEMM + Softmax
 ```
 
 ## 各版本详解

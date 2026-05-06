@@ -50,19 +50,6 @@
 | Shared Layout | Swizzle<3,3,3> 优化 bank conflict |
 | Copy 策略 | G2S: `SM80_CP_ASYNC_CACHEGLOBAL`, S2R: `SM75_U32x4_LDSM_N` |
 
-## 构建
-
-```bash
-cd build/7_cute
-cmake ..
-make
-```
-
-生成的可执行文件:
-- `v1_native_gemm`
-- `v2_shared_memory`
-- `v3_epilogue`
-- `v4_multistage`
 
 ## 测试方法
 

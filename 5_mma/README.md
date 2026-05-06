@@ -73,24 +73,7 @@ __device__ __forceinline__ uint32_t swizzle(uint32_t addr) {
     constexpr auto Bmask = ((1 << B) - 1) << M;
     return ((addr >> S) & Bmask) ^ addr;
 }
-```
 
-## 编译与运行
-
-```bash
-cd /path/to/CUDA_Notes/5_mma
-mkdir build && cd build
-cmake .. -DCMAKE_BUILD_TYPE=Release
-make -j$(nproc)
-
-# 运行各版本
-./v1_simple_wmma
-./v2_shared_memory_wmma
-./v3_shared_memory_wmma_padding
-./v4_shared_memory_mma
-./v5_shared_memory_mma_swizzle
-./hgemm_v1_mma_m16n8k16_naive  # 完整 GEMM 测试
-```
 
 ## 补充文件
 

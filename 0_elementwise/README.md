@@ -139,10 +139,3 @@ __global__ void elementwise_add_f16x8_pack_kernel(half *a, half *b, half *c, int
   - 数据类型大小决定每次访存的元素数量
   - 确保总字节数达到 128 位以充分利用 memory transaction
 ```
-
-## 编译与运行
-
-```bash
-nvcc -o add add.cu
-./add
-```
